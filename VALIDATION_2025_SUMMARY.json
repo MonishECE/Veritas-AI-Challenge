@@ -1,0 +1,54 @@
+{
+  "source": "Five user-provided validator JSON outputs in conversation; not independently reproduced inside this package",
+  "status": "EXPLORATORY_SATELLITE_PROXY_NOT_ROOF_VALIDATION",
+  "threshold_K": 5.0,
+  "dates": {
+    "2025-04-23": {
+      "cells": 23,
+      "decision_ai": 7.569280139278298,
+      "physics": 7.524303409981671,
+      "no_reflection": 7.269566913757394,
+      "scene_ai": 5.552929839067499
+    },
+    "2025-05-26": {
+      "cells": 28,
+      "decision_ai": 6.178780679684217,
+      "physics": 6.134077366562224,
+      "no_reflection": 6.814049468070528,
+      "scene_ai": 2.595941841191983
+    },
+    "2025-06-03": {
+      "cells": 27,
+      "decision_ai": 6.6823467414299165,
+      "physics": 6.5993970190702305,
+      "no_reflection": 6.876683990911505,
+      "scene_ai": 0.4900950123617411
+    },
+    "2025-06-11": {
+      "cells": 30,
+      "decision_ai": 6.289839618921832,
+      "physics": 6.230421097082012,
+      "no_reflection": 6.008319782573775,
+      "scene_ai": 3.377919825649134
+    },
+    "2025-07-21": {
+      "cells": 27,
+      "decision_ai": 4.412396572548632,
+      "physics": 4.359036576005955,
+      "no_reflection": 4.646901208717506,
+      "scene_ai": 0.0035353580979618103
+    }
+  },
+  "equal_date_weight_mean_grid_cell_MAE_C": {
+    "decision_ai": 6.226528750372579,
+    "physics": 6.169447093740418,
+    "no_reflection": 6.323104272806142
+  },
+  "total_matched_grid_cell_records": 135,
+  "notes": [
+    "Grid cells are correlated and not independent roof thermometers.",
+    "These models were trained on simulation; temperature proxy differs from Landsat retrieval.",
+    "All 2025 scenes are development data; no independent generalization claim.",
+    "Unified decision engine considered as one AI system; physics and no reflection are external scientific benchmarks."
+  ]
+}

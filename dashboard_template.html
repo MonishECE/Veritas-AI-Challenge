@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UrbanRay · Verified Method Comparison</title>
+<style>
+:root{color-scheme:dark;--bg:#080f1d;--panel:#101c30;--stroke:#253953;--cyan:#5be3dc;--gold:#ffbb77;--text:#f0f6fe;--sub:#9fb1c5;--muted:#8199b2}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 84% -12%,#163752,#080f1d 49%);font:15px/1.5 Inter,system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--text)}
+header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px max(4vw,20px);border-bottom:1px solid var(--stroke)}
+.brand{letter-spacing:.17em;font-size:13px;color:var(--cyan);font-weight:800}.tag{border:1px solid var(--stroke);color:var(--sub);padding:7px 11px;border-radius:11px;font-size:11px}
+main{max-width:1680px;margin:auto;padding:27px max(4vw,20px) 55px}h1{font-size:clamp(28px,3.7vw,47px);line-height:1.11;letter-spacing:-.035em;margin:0 0 9px}h2{font-size:17px;margin:0 0 5px}h3{font-size:13px;margin:0 0 8px;color:var(--text)}p{color:var(--sub);margin:0}.sublead{max-width:920px;margin:11px 0 25px}
+.panel{background:rgba(16,28,48,.93);border:1px solid var(--stroke);border-radius:17px;padding:18px;min-width:0}.small{font-size:12px;color:var(--sub)}.small a{color:var(--cyan)}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:17px}.summary .value{font-size:clamp(22px,2.9vw,33px);font-weight:760;letter-spacing:-.025em;margin:2px 0}
+.grid{display:grid;grid-template-columns:minmax(0,2.25fr) minmax(300px,1fr);gap:17px}.sidehead{display:flex;justify-content:space-between;align-items:center;gap:12px}.pill{color:#0c1925;background:var(--cyan);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:16px}.ctrl{border:1px solid var(--stroke);border-radius:12px;padding:9px 11px;min-width:0}.ctrl label{display:block;color:var(--sub);font-size:11px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.075em}select,input{width:100%;background:#15263d;color:white;border:1px solid #36506e;border-radius:8px;padding:8px;font:inherit;min-width:0}select:disabled{opacity:.5;cursor:not-allowed}input[type=range]{accent-color:var(--cyan);padding:2px}input[type=search]{font-size:13px}
+.notice{font-size:12px;line-height:1.55;color:#bcd0df;padding:11px 12px;border:1px solid #315a67;background:#102a37;border-radius:11px;margin:12px 0}.notice strong{color:#d2fffa}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.metric{background:#0c1929;border:1px solid var(--stroke);border-radius:11px;padding:11px;min-width:0}.metric .n{font-weight:750;font-size:clamp(14px,1.6vw,19px);color:#eaf9ff;font-variant-numeric:tabular-nums}.metric .s{font-size:10px;color:var(--sub);line-height:1.3;min-height:28px}.metric.active{border-color:#53a7ac;background:#123444}
+.plotstage{position:relative;margin-top:10px;height:520px;border-radius:12px;background:#0a1626;overflow:hidden}.plot{height:100%;width:100%;position:relative}.plot canvas.urban-canvas{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.legend{position:absolute;right:12px;bottom:13px;background:#0a1626ed;border:1px solid #36516c;padding:10px 11px;border-radius:10px;min-width:170px;max-width:220px;pointer-events:none;font-size:11px;z-index:4}.gradient{height:11px;border-radius:5px;background:linear-gradient(to right,#142d55,#16b4a7,#f5c26b,#e85a57);margin:5px 0}.legend-ends{display:flex;justify-content:space-between;gap:12px;color:#d8e9f3;font-variant-numeric:tabular-nums}.plothelp{margin-top:9px;font-size:12px;color:var(--sub)}.map-tooltip{position:absolute;pointer-events:none;background:#071323f5;border:1px solid #4b7285;padding:7px 10px;font:12px/1.5 system-ui;color:#ecfaff;border-radius:8px;z-index:5;max-width:210px;display:none}
+.tablewrap{max-height:395px;overflow:auto;margin-top:10px;border:1px solid var(--stroke);border-radius:10px}table{width:100%;border-collapse:collapse;font-size:12px}td,th{text-align:left;border-bottom:1px solid #283950;padding:9px 7px}th{color:var(--sub);position:sticky;top:0;background:#101c30;z-index:1}tbody tr{cursor:pointer}tbody tr:hover,tbody tr.sel{background:#234259}td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}.selection{margin-top:14px;background:#0b1b2e;border:1px solid var(--stroke);padding:12px;border-radius:11px}.selection div{margin-top:4px}
+.lower{display:grid;grid-template-columns:1.35fr 1fr;gap:17px;margin-top:17px}.subplot{height:265px}.subplot.compact{height:165px}.fineprint{margin-top:18px;padding:16px;border:1px solid #36485e;border-radius:13px;color:var(--sub);font-size:12px;line-height:1.7}
+.methodbadge{color:#b8e8e3;font-weight:700}.warn{color:#fdd0a1}#errorBanner{display:none;border-color:#a74b61;background:#351c30;color:#ffccd2}button{background:#173850;border:1px solid #3f7187;border-radius:8px;color:#eef7ff;padding:7px 10px;font:inherit;cursor:pointer}button:hover{background:#225573}
+@media(max-width:1080px){.grid,.lower{grid-template-columns:1fr}.summary{grid-template-columns:repeat(2,1fr)}.plotstage{height:470px}}
+@media(max-width:580px){.controls,.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.plotstage{height:390px}.summary{grid-template-columns:repeat(2,1fr)}header{align-items:start;flex-direction:column}.panel{padding:13px}.legend{min-width:125px}.metric .s{font-size:9px}}
+@media(max-width:400px){.controls{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr} .metric{padding:8px}}
+</style></head><body>
+<header><div><div class="brand">URBANRAY / RESEARCH LAB</div><div class="small">AI-assisted solar radiation & modeled cool-roof screening</div></div><span class="tag">OFFLINE RESEARCH DASHBOARD · JUNE 23, 2025</span></header>
+<main><h1>Map urban reflection hotspots.<br>Screen reflective roofs.</h1><p class="sublead">Explore simulated shortwave radiation across <strong>88 NYC building footprints</strong>. Compare an AI surrogate with the complete multibounce physics simulation and a no-reflection baseline—using absolute values and direct difference views. <strong style="color:#fff">These are modeled results, not observed roof temperatures.</strong></p>
+<div id="errorBanner" class="notice" role="alert"></div>
+<div class="notice" id="researchStatus"><strong>Research status:</strong> AI models trained on simulation. A previously reported five-date paired satellite-proxy summary is included below, but its raw per-date validator outputs are not packaged here. This is not independent roof-temperature validation; new dates and field measurements are still needed.</div>
+<div class="notice" id="judgeTour" role="region" aria-label="Two-minute judge walkthrough"><strong>Judge demo:</strong> See the model comparison, select a building, choose <em>Hotspot specialist · modeled reflections</em>, then inspect the decision and satellite-evidence panels. <button id="guidedDemoBtn" type="button">Reset to demo scene</button><span id="guidedDemoStatus" class="small" aria-live="polite"></span></div>
+<section class="panel" id="enhancedModels" style="margin-bottom:17px;display:none"><h2>New AI models · retrospective simulator comparison</h2><p class="small">Lower error is better; higher modeled reflection captured is better. Results are from one date and withheld spatial blocks, not field measurements.</p><div class="tablewrap" style="max-height:none"><table><thead><tr><th>Method</th><th class="r">Radiation MAE</th><th class="r">Top 10% reflection MAE</th><th class="r">Top-20 modeled exposure captured</th></tr></thead><tbody id="modelComparisonRows"></tbody></table></div></section>
+<section class="panel" id="unifiedDecision" aria-label="Unified AI decision engine" style="margin-bottom:17px;display:none">
+<div class="sidehead"><div><h2>One AI decision engine · two preserved specialist models</h2><p class="small">The regression model estimates roof solar absorption; the hotspot specialist ranks facade reflections. One screening layer checks both, flags disagreements, and abstains from retrofit approval.</p></div><span class="pill">DUAL MODEL · SHARED INPUTS</span></div>
+<div class="metrics" style="margin-top:15px">
+<div class="metric"><div class="s">SELECTED ROOF · REGRESSION SOLAR HEAT AVOIDED</div><div class="n" id="engRoof">—</div></div>
+<div class="metric"><div class="s">NEARBY WALLS · WHOLE-NEIGHBORHOOD REFLECTION CHANGE</div><div class="n" id="engWalls">—</div></div>
+<div class="metric"><div class="s">TWO MODELS · ROOF-SCENARIO DISAGREEMENT</div><div class="n" id="engSpread">—</div></div>
+<div class="metric"><div class="s">RESEARCH SCREENING FLAG</div><div class="n" id="engFlag" style="font-size:14px">—</div></div>
+</div>
+<div class="notice"><strong id="engContext">Building selection follows the roof table or map.</strong> Nearby-wall changes are for the <strong>all-roofs reflective vs all-roofs dark</strong> scenario, <strong>not caused or attributable to the selected roof alone</strong>. Model disagreement is <strong>not</strong> a calibrated uncertainty interval. This system never approves an installation.</div>
+<div class="sidehead" style="margin-top:10px"><h3>Specialist AI · top simulated wall reflection hotspots</h3><span class="small">2025-06-23 · dark-roof scenario</span></div>
+<div class="tablewrap" style="max-height:215px"><table><thead><tr><th>#</th><th>Wall face ID</th><th>Building ID</th><th class="r">Modeled reflected Wh/m²/day</th></tr></thead><tbody id="engHotspotRows"></tbody></table></div>
+<div class="small" style="margin-top:10px">Both neural-free model files remain unchanged. Results are retrospective, based on simulator outputs and a previously inspected date; no independent facade or rooftop sensor validation has been completed.</div>
+</section>
+<section class="summary" aria-label="Held-out model evaluation"><div class="panel"><div class="small">HELD-OUT AI ERROR / PHYSICS TARGET</div><div class="value" id="mae">—</div><div class="small">Mean absolute error · W/m²</div></div><div class="panel"><div class="small">IMPROVEMENT VS SIMPLE BASELINE</div><div class="value" id="improvement">—</div><div class="small">Spatially held-out simulation labels</div></div><div class="panel"><div class="small">BUILDINGS SCREENED</div><div class="value" id="buildings">—</div><div class="small">Archived NYC geometry</div></div><div class="panel"><div class="small">AI ↔ PHYSICS RANK AGREEMENT</div><div class="value" id="spearman">—</div><div class="small">Spearman correlation, modeled estimates</div></div></section>
+<div class="grid"><section class="panel" aria-label="City comparison controls and map">
+<div class="sidehead"><div><h2>City radiation explorer</h2><p class="small" id="mapSubtitle">Shortwave absorption · W/m² · not temperature</p></div><span class="pill" id="modePill">LOADING</span></div>
+<div class="controls"><div class="ctrl"><label for="quantity">What to visualize</label><select id="quantity"><option value="absolute">Absolute absorbed radiation</option><option value="error">Selected method − full physics</option><option value="reflection">Full-physics reflected solar heat</option><option value="ai_reflection">AI-estimated reflected solar heat</option><option value="specialist_reflection">Hotspot specialist · modeled reflections</option><option value="cooling">Dark roof − reflective roof</option></select></div>
+<div class="ctrl"><label for="method">Prediction method</label><select id="method"><option value="ai">AI surrogate</option><option value="physics">Full physics reference</option><option value="no_reflection">No-reflection baseline</option></select></div>
+<div class="ctrl"><label for="scenario">Roof treatment</label><select id="scenario"><option value="dark_roof">Dark roofs · albedo 0.18</option><option value="reflective_roof">Reflective roofs · albedo 0.58</option></select></div>
+<div class="ctrl"><label for="mapView">Map geometry</label><select id="mapView"><option value="3d">3D · roofs and walls</option><option value="2d">2D · rooftops only</option></select></div>
+<div class="ctrl" style="grid-column:1/-1"><label for="hour">Hour (UTC): <span id="hourLabel"></span></label><input type="range" id="hour" min="0" max="23" value="17" step="1" aria-label="Hour UTC"></div></div>
+<div class="notice" id="methodNote" aria-live="polite"></div>
+<div class="metrics" id="methodMetrics" aria-label="Current hour method comparisons"><div class="metric"><div class="s">AI mean · all faces</div><div class="n" id="currentAi">—</div></div><div class="metric"><div class="s">Full physics mean · all faces</div><div class="n" id="currentPhysics">—</div></div><div class="metric"><div class="s">No-reflection mean · all faces</div><div class="n" id="currentBaseline">—</div></div><div class="metric"><div class="s" id="currentDifferenceLabel">AI error · MAE vs physics</div><div class="n" id="currentDifference">—</div></div></div>
+<div class="plotstage"><div id="city" class="plot" aria-label="City model visualization"></div><div id="mapTooltip" class="map-tooltip"></div><div class="legend"><div id="legendLabel">Scale · W/m²</div><div id="legendGradient" class="gradient"></div><div class="legend-ends"><span id="legendMin">0</span><span id="legendMax">—</span></div></div></div>
+<div class="plothelp" id="scaleNote"></div><div class="plothelp" id="viewNote"></div>
+</section>
+<section class="panel" aria-label="Rooftop screening ranking"><div class="sidehead"><div><h2 id="rankingTitle">Priority rooftops</h2><p class="small" id="rankingDesc">Ranked by simulated reduction in absorbed roof radiation</p></div><span class="small">2025-06-23</span></div><div class="small" id="rooferror" style="padding-top:7px"></div><div class="controls"><div class="ctrl"><label for="rankMetric">Retrofit screening metric</label><select id="rankMetric"><option value="solarheat">Solar heat avoided · kWh / modeled day</option><option value="flux">Roof heat flux reduced · W/m²</option></select></div><div class="ctrl"><label for="searchBuilding">Find building</label><input id="searchBuilding" type="search" placeholder="Building ID…" aria-label="Filter buildings"></div></div><div class="notice"><strong>Planning interpretation:</strong> daily kWh here is modeled solar heat NOT electrical energy savings or a guaranteed retrofit outcome. Roof-area, material, cost, vegetation and present roof condition require field checks.</div><div class="tablewrap"><table><thead><tr><th>#</th><th>NYC building ID</th><th class="r" id="rankingUnit">kWh / day</th></tr></thead><tbody id="ranking"></tbody></table></div><div id="rankingCount" class="small" style="margin-top:7px"></div><div class="selection small" id="selection" aria-live="polite"></div></section></div>
+<div class="lower"><section class="panel"><h2 id="trendTitle">Selected building — rooftop radiation</h2><p class="small">All three methods for the selected roof scenario; UTC hours 00–23</p><div id="trendStats" class="notice"></div><div class="subplot" id="trend"></div><h3>Difference from full physics · same roof</h3><div class="subplot compact" id="residual"></div><p class="small">These trend values are area-weighted averages over the selected building's roof patches.</p></section>
+<section class="panel"><h2>How the AI learns reflected sunlight</h2><p class="small">Permutation feature importance on held-out simulated faces. Importance measures predictive dependence, not causation.</p><div class="subplot" id="importance"></div><div class="notice"><strong>Interpretation:</strong> The AI targets the full physics simulator. Similar AI and physics maps are a desirable result when errors are low. Use <span class="methodbadge">Selected method − full physics</span> to examine discrepancies. No-reflection differs because it omits multiple-bounce solar absorption.</div><h3>About these maps</h3><p class="small">The 3D view displays all 2,082 triangular surface patches; the 2D view displays only roof patches, so map means and 2D visual patterns describe different subsets. The fixed absolute color scale is the same for every method and hour. Comparison scales use a labeled robust limit; saturated colors do not truncate the underlying values.</p></section></div>
+<div class="lower" id="decisionEvidence">
+<section class="panel" aria-label="Decision task benchmarking">
+<h2>Does AI improve a real decision task?</h2>
+<p class="small">Retrospective date + spatial-block SIMULATOR comparison on an already-reviewed test day: identify the most reflection-exposed wall patches. Percent of the physics reference's top-K total modeled exposure captured by selection.</p>
+<div class="metrics" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:17px">
+<div class="metric"><div class="s" id="hotAILabel">AI · TOP 20 WALL PATCHES</div><div class="n" id="hotAI">—</div></div>
+<div class="metric"><div class="s">DIRECT-SUN RULE · TOP 20</div><div class="n" id="hotBase">—</div></div></div>
+<div class="subplot" id="hotspotChart" role="img" aria-label="Comparison of AI and direct-only rule on held-out reflected-solar exposure"></div>
+<p class="small">Rooftop retrofit selection is a negative control: for 3, 5 and 10 held-out roof portions, AI did <strong>not</strong> outperform the direct-sun baseline. The AI's benefit is reflection-hotspot screening, not a measured speedup or verified roof-cooling impact. Neither method has been validated against wall sensors.</p>
+</section>
+<section class="panel" aria-label="Actual satellite observational evidence and its limits">
+<h2>Independent satellite evidence: what is actually known?</h2>
+<p class="small">Previously archived PHYSICS-only emission proxy compared with independently retrieved Landsat surface temperature. This is NOT an AI temperature validation.</p>
+<div class="metrics" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:17px">
+<div class="metric"><div class="s">2026 HELD-OUT SCENES</div><div class="n" id="landsatScenes">—</div></div>
+<div class="metric"><div class="s">PHYSICS PROXY vs LANDSAT · RAW MAE</div><div class="n" id="landsatMae">—</div></div></div>
+<div class="subplot" id="landsatChart" role="img" aria-label="Previous physics-only model versus real satellite surface-temperature scenes"></div>
+<p class="small"><strong>Not a roof thermometer:</strong> Landsat's native thermal data are much coarser than its 30 m output grid; retrievals mix roofs, ground and vegetation. The model uses assumed materials. This chart shows the separate 2026 physics-only summary; the five-date 2025 AI comparison below is not reproduced from underlying inputs in this ZIP.</p>
+<div class="notice" id="pairedDev2025" role="region" aria-label="Reported paired 2025 satellite development-date comparison">
+<strong>Five 2025 development dates — previously reported paired diagnostic</strong>
+<p class="small">Equal-weight mean of each date's grid-cell mean absolute error against Landsat surface-temperature retrieval (°C). These are <strong>correlated grid cells and exploratory proxy mismatches</strong>, not individual roof temperatures or a new untouched test.</p>
+<div class="metrics" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px">
+<div class="metric"><div class="s">UNIFIED AI</div><div class="n" id="pairedAi">—</div></div>
+<div class="metric"><div class="s">PHYSICS</div><div class="n" id="pairedPhysics">—</div></div>
+<div class="metric"><div class="s">NO REFLECTION</div><div class="n" id="pairedBaseline">—</div></div></div>
+<p class="small" id="pairedCaption"></p>
+<div class="tablewrap" style="max-height:none"><table><thead><tr><th>Development date</th><th class="r">AI · °C</th><th class="r">Physics · °C</th><th class="r">No reflection · °C</th></tr></thead><tbody id="pairedDateRows"></tbody></table></div>
+<p class="small"><strong>Evidence status:</strong> Transcribed from five previously supplied validator JSON summaries, not rerun or independently audited from raw face-hour files in this distribution. The AI does not beat physics on these five dates. No effect of a real roof intervention has been established.</p>
+</div>
+</section></div>
+<div class="fineprint"><strong style="color:#fff">Scientific disclosure.</strong> The model learns simulator-generated shortwave absorption labels—not sensor-measured temperatures. Full physics is a reference computation, not observed ground truth. The reflective-roof scenario uses assumed albedos; the roof rankings indicate modeled reduction in absorbed solar radiation rather than validated cooling or cost effectiveness. Only the original full-physics run generated the reported modeled roof temperature changes. The displayed model benchmark uses a previously inspected spatial-and-date-block test from June 23, 2025. The additional interactive map patches on that same date do not constitute new evaluation data. Field accuracy and full physical generalization are unproven. Historical weather and roof-material assumptions introduce additional uncertainty. All visualizations and data work offline.</div>
+</main>
+<script>/* Embedded Plotly.js; MIT license retained from source */
+__PLOTLY__
+</script>
+<script>
+const D=__DATA__, META=__META__, IMPORTANCE=__IMPORTANCE__, EVIDENCE=__EVIDENCE__;
+// Source data are archived model outputs. This UI does not generate or modify predictions.
+const VALIDATION_2025=__VALIDATION_2025__;
+const $=id=>document.getElementById(id);
+const LABEL={ai:'AI surrogate',physics:'Full physics',no_reflection:'No-reflection baseline'};
+const SCEN={dark_roof:'Dark roofs · 0.18',reflective_roof:'Reflective roofs · 0.58'};
+const COLOR_ABS=[[0,'#142d55'],[0.3,'#1599b2'],[0.55,'#37c4a7'],[0.76,'#f5bd60'],[1,'#eb6a58']];
+const COLOR_SIGNED=[[0,'#e56874'],[0.5,'#213954'],[1,'#5be3dc']];
+const COLOR_POS=[[0,'#142d55'],[0.3,'#2c6c93'],[0.62,'#5acbb4'],[1,'#ffbe77']];
+let selected=String(D.rankings[0].building_id), rankingRows=[], mapVersion=0, mapUpdating=false, pendingMap=false, mapRaf=0;
+let map2d={render:null,transform:null};let webglSupported=false;let mapCurrent=null;let savedMethod='ai';
+const plotStyle={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',font:{color:'#c1d6ea'},margin:{l:0,r:0,t:8,b:0}};
+function mean(a){return a.reduce((s,x)=>s+x,0)/a.length;}
+function mae(a,b){let s=0;for(let i=0;i<a.length;i++)s+=Math.abs(a[i]-b[i]);return s/a.length;}
+function percentile(a,p){let v=a.slice().sort((x,y)=>x-y);return v[Math.min(v.length-1,Math.floor((v.length-1)*p))];}
+function signed(x,d=1){return (x>0?'+':'')+x.toFixed(d);}
+function validateArchive(){
+ const n=D.mesh.i.length;if(n!==2082||D.mesh.j.length!==n||D.mesh.k.length!==n)throw new Error('Mesh face lengths are inconsistent');
+ if(D.mesh.x.length!==D.mesh.y.length||D.mesh.x.length!==D.mesh.z.length)throw new Error('Mesh vertex lengths mismatch');
+ if(D.mesh.roof_i.some(i=>!Number.isInteger(i)||i<0||i>=n))throw new Error('Invalid roof-face indices');
+ if(D.mesh.i.some((i,k)=>[i,D.mesh.j[k],D.mesh.k[k]].some(v=>!Number.isInteger(v)||v<0||v>=D.mesh.x.length)))throw new Error('Mesh vertex index out of range');
+ if(D.times.length!==24||D.rankings.length!==88)throw new Error('Unexpected archive dimension');
+ for(const scenario of ['dark_roof','reflective_roof'])for(const t of D.times){const d=D.states[scenario]?.[t];if(!d)throw new Error('Missing scenario/hour '+scenario+'/'+t);for(const method of Object.keys(LABEL))if(!d[method]||d[method].length!==n||!d[method].every(Number.isFinite))throw new Error('Invalid prediction array for '+method+'/'+t);}
+ if(D.unified_engine){
+  for(const scenario of ['dark_roof','reflective_roof'])for(const time of D.times){
+    const model=D.states[scenario][time].hotspot_ai;
+    if(!model||model.length!==n||!model.every(Number.isFinite))throw new Error('Incomplete specialist map predictions');
+  }
+  if(D.unified_engine.screenings.length!==88||D.unified_engine.top_hotspots.length!==20)throw new Error('Incomplete unified engine data');
+  if(D.unified_engine.model_weights_modified!==false||D.unified_engine.validated_against_field_measurements!==false)throw new Error('Invalid model evidence flag');
+  if(D.unified_engine.wall_scenario_change_is_individual_roof_causal_effect!==false)throw new Error('Invalid causal disclaimer');
+  const unique=new Set(D.unified_engine.screenings.map(x=>String(x.building_id)));
+  if(unique.size!==88)throw new Error('Duplicated building screening entries');
+ }
+ for(const r of D.rankings){const b=D.building_series[String(r.building_id)];if(!b)throw new Error('Missing series '+r.building_id);for(const scen of ['dark_roof','reflective_roof'])for(const k of [...Object.keys(LABEL),'physics_temp_C'])if(!Array.isArray(b[scen]?.[k])||b[scen][k].length!==24)throw new Error('Incomplete roof series '+r.building_id+'/'+scen+'/'+k);}
+}
+function limits(){
+ const modelError={ai:[],physics:[],no_reflection:[]},reflection=[],aiReflection=[],specialistReflection=[],cooling={ai:[],physics:[],no_reflection:[]};let absMax=0;
+ for(const t of D.times){let dark=D.states.dark_roof[t],light=D.states.reflective_roof[t];for(const scenario of [dark,light]){const ref=scenario.physics,base=scenario.no_reflection;for(let i=0;i<ref.length;i++){reflection.push(Math.max(0,ref[i]-base[i]));aiReflection.push(Math.max(0,scenario.ai[i]-base[i]));if(scenario.hotspot_ai)specialistReflection.push(Math.max(0,scenario.hotspot_ai[i]-base[i]));for(const m of Object.keys(LABEL)){modelError[m].push(Math.abs(scenario[m][i]-ref[i]));absMax=Math.max(absMax,scenario[m][i]);}}}for(const method of Object.keys(LABEL))for(let i=0;i<dark[method].length;i++)cooling[method].push(Math.abs(dark[method][i]-light[method][i]));}
+ const round=x=>Math.max(1,Math.ceil(x/5)*5);
+ return {absMax:Math.ceil(absMax/50)*50,errors:Object.fromEntries(Object.entries(modelError).map(([k,v])=>[k,round(percentile(v,.98))])),reflection:round(percentile(reflection,.98)),aiReflection:round(percentile(aiReflection,.98)),specialistReflection:specialistReflection.length?round(percentile(specialistReflection,.98)):1,cooling:Object.fromEntries(Object.entries(cooling).map(([k,v])=>[k,round(percentile(v,.98))]))};
+}
+function hasWebGL(){try{const c=document.createElement('canvas');const gl=c.getContext('webgl',{failIfMajorPerformanceCaveat:true})||c.getContext('experimental-webgl');if(!gl)return false;gl.getExtension('WEBGL_lose_context')?.loseContext();return true;}catch(e){return false;}}
+let LIMITS;
+function effectiveMethod(){return $('quantity').value==='reflection'?'physics':['ai_reflection','specialist_reflection'].includes($('quantity').value)?'ai':$('method').value;}
+function getState(){let view=$('quantity').value,method=$('method').value,scenario=$('scenario').value,h=+$('hour').value,t=D.times[h],v=D.states[scenario][t];let arr,label,lim,pal=COLOR_ABS;
+ if(view==='absolute'){arr=v[method];label=`${LABEL[method]} · absorbed solar radiation`;lim=[0,LIMITS.absMax];}
+ else if(view==='error'){arr=v[method].map((x,i)=>x-v.physics[i]);label=`${LABEL[method]} minus full physics`;let a=LIMITS.errors[method];lim=[-a,a];pal=COLOR_SIGNED;}
+ else if(view==='reflection'){arr=v.physics.map((x,i)=>x-v.no_reflection[i]);label='Additional absorbed radiation from modeled reflections';lim=[0,LIMITS.reflection];pal=COLOR_POS;}
+ else if(view==='ai_reflection'){arr=v.ai.map((x,i)=>Math.max(0,x-v.no_reflection[i]));label='Regression AI · modeled reflection addition';lim=[0,LIMITS.aiReflection];pal=COLOR_POS;}
+ else if(view==='specialist_reflection'){if(!v.hotspot_ai)throw new Error('Specialist model predictions are unavailable');arr=v.hotspot_ai.map((x,i)=>Math.max(0,x-v.no_reflection[i]));label='Specialist AI · modeled facade reflection hotspots';lim=[0,LIMITS.specialistReflection];pal=COLOR_POS;}
+ else{let d=D.states.dark_roof[t][method],r=D.states.reflective_roof[t][method];arr=d.map((x,i)=>x-r[i]);label=`${LABEL[method]} · dark minus reflective`;let a=LIMITS.cooling[method];lim=[-a,a];pal=COLOR_SIGNED;}
+ return {view,method,scenario,h,t,arr,label,lim,pal};
+}
+function updateHelp(st){
+ $('method').disabled=st.view==='reflection'||st.view==='ai_reflection'||st.view==='specialist_reflection';$('scenario').disabled=st.view==='cooling';
+ const descriptions={absolute:'Same <strong>fixed 0–'+LIMITS.absMax+' W/m² scale</strong> for all methods, roof scenarios, and hours. The AI is trained to approximate full physics, so agreement is expected.',error:st.method==='physics'?'You selected <strong>full physics minus itself</strong>. Every patch is exactly zero by definition; select AI or no-reflection to see differences.':'Signed difference from the full-physics reference. <strong>Teal = selected method higher; coral = lower.</strong> The comparison is against simulated physics, not measured conditions.',reflection:'This is the simulator reflection contribution: <strong>full physics minus no-reflection</strong>. It is the training target, not an observed field value.',ai_reflection:'This is the <strong>AI-predicted extra absorption from reflected sunlight</strong> above the same no-reflection floor. Test whether the AI identifies shaded urban wall hotspots; no field sensor comparison exists.',cooling:'This view subtracts the reflective-roof scenario from the dark-roof scenario using the chosen prediction method. <strong>Positive means lower absorbed solar radiation with reflective roofs</strong>; negative means the opposite. This is not a temperature reduction.'};
+ $('methodNote').innerHTML=descriptions[st.view];$('mapSubtitle').textContent=st.label+' · W/m², not temperature';
+ const n=st.arr.length;let clipped=st.arr.reduce((s,v)=>s+((v<st.lim[0]||v>st.lim[1])?1:0),0);
+ $('scaleNote').textContent=(st.view==='absolute'?'Fixed scale covering the archive maximum.':'Comparison color limits are fixed across all hours/scenarios for the selected view and method, using the 98th percentile of absolute model differences. ')+(clipped?`${clipped} of ${n} patches (${(100*clipped/n).toFixed(1)}%) exceed the display scale; raw values and statistics are unchanged.`:'No values exceed the current display scale.')
+ $('viewNote').textContent=$('mapView').value==='2d'?'2D view: roof triangles only. Click a white building marker; hover a triangle for its exact value.':'3D view: roofs and walls (WebGL required). Click a white marker to select a building; drag to rotate. If graphics are slow, switch back to 2D.';
+ const grad=st.pal.map(([p,color])=>`${color} ${(100*p).toFixed(1)}%`).join(',');$('legendGradient').style.background=`linear-gradient(to right,${grad})`;
+ $('legendLabel').textContent=st.view==='absolute'?'Absorbed W/m²':st.view==='error'?'Method − physics W/m²':st.view==='reflection'?'Physics reflection W/m²':st.view==='ai_reflection'?'Regression reflections W/m²':st.view==='specialist_reflection'?'Specialist reflections W/m²':'Dark − reflective W/m²';
+ $('legendMin').textContent=st.lim[0].toFixed(0);$('legendMax').textContent=st.lim[1].toFixed(0);
+}
+function updateMetrics(st){
+ const v=D.states[st.scenario][st.t],a=v.ai,p=v.physics,b=v.no_reflection;
+ const labels=Array.from(document.querySelectorAll('#methodMetrics .metric .s'));
+ document.querySelectorAll('#methodMetrics .metric').forEach(x=>x.classList.remove('active'));
+ if(st.view==='cooling'){
+  const dark=D.states.dark_roof[st.t][st.method],light=D.states.reflective_roof[st.t][st.method],d=dark.map((x,i)=>x-light[i]);
+  labels[0].textContent='Dark-roof mean · '+LABEL[st.method];
+  labels[1].textContent='Reflective-roof mean · '+LABEL[st.method];
+  labels[2].textContent='Mean dark − reflective';
+  labels[3].textContent='Mean absolute roof-scenario difference';
+  $('currentAi').textContent=mean(dark).toFixed(2);$('currentPhysics').textContent=mean(light).toFixed(2);$('currentBaseline').textContent=signed(mean(d),2);$('currentDifference').textContent=mean(d.map(Math.abs)).toFixed(2);
+ }else{
+  labels[0].textContent='AI mean · all faces';labels[1].textContent='Full physics mean · all faces';labels[2].textContent='No-reflection mean · all faces';
+  $('currentAi').textContent=mean(a).toFixed(2);$('currentPhysics').textContent=mean(p).toFixed(2);$('currentBaseline').textContent=mean(b).toFixed(2);
+  if(st.view==='reflection'||st.view==='ai_reflection'||st.view==='specialist_reflection'){labels[3].textContent=st.view==='specialist_reflection'?'Specialist AI extra reflection · mean':st.view==='ai_reflection'?'AI-estimated extra reflection · mean':'Physics extra reflection · mean';let refl=st.view==='specialist_reflection'?v.hotspot_ai:st.view==='ai_reflection'?a:p;$('currentDifference').textContent=mean(refl.map((x,i)=>Math.max(0,x-b[i]))).toFixed(2);}
+  else{labels[3].textContent=`${LABEL[st.method]} MAE vs physics · this hour`;$('currentDifference').textContent=mae(v[st.method],p).toFixed(2);}
+  if(st.view==='absolute') document.querySelectorAll('#methodMetrics .metric')[({ai:0,physics:1,no_reflection:2})[st.method]].classList.add('active');
+ }
+ $('hourLabel').textContent=st.t.slice(11,16)+' · '+st.t.slice(0,10);
+}
+
+function daylightMeanReduction(bid,method){
+ const b=D.building_series[bid],dark=b.dark_roof,light=b.reflective_roof;let sum=0,n=0;
+ for(let h=0;h<D.times.length;h++)if(dark.physics[h]>0.001){sum+=dark[method][h]-light[method][h];n++;}return n?sum/n:0;
+}
+function rankingMetric(row,method){
+ if(method==='ai')return row.ai_estimated_roof_solar_reduction_Wm2;
+ if(method==='physics')return row.physics_roof_solar_reduction_Wm2;
+ return daylightMeanReduction(String(row.building_id),'no_reflection');
+}
+function rankingScore(row,method){return $('rankMetric').value==='solarheat' ? row[method+'_solar_heat_avoided_kWh_simulated_day'] : rankingMetric(row,method);}
+function refreshRanking(){
+ let m=effectiveMethod(), useHeat=$('rankMetric').value==='solarheat';rankingRows=D.rankings.map(r=>({id:String(r.building_id),value:rankingScore(r,m),reference:r})).sort((a,b)=>b.value-a.value||a.id.localeCompare(b.id));
+ $('rankingTitle').textContent=LABEL[m]+' · simulated rooftop options';
+ $('rankingDesc').textContent=useHeat?'24-hour solar heat avoided in modeled scenarios, kWh (not electricity or field cooling).':'Mean daylight dark-minus-reflective shortwave flux, W/m².'; $('rankingUnit').textContent=useHeat?'kWh / day':'W/m²';
+ const query=$('searchBuilding').value.trim().toLowerCase();let rows=rankingRows.filter(x=>x.id.toLowerCase().includes(query));
+ const body=$('ranking');body.replaceChildren();let fragment=document.createDocumentFragment();
+ rows.forEach(r=>{let tr=document.createElement('tr');tr.dataset.id=r.id;if(r.id===selected)tr.classList.add('sel');let rank=rankingRows.indexOf(r)+1;for(let value of [rank,r.id,r.value.toFixed(1)]){const td=document.createElement('td');td.textContent=value;if(value===r.value.toFixed(1))td.className='r';tr.appendChild(td);}tr.onclick=()=>selectBuilding(r.id);fragment.appendChild(tr);});body.appendChild(fragment);
+ $('rankingCount').textContent=`Showing ${rows.length} of ${rankingRows.length} buildings · ranking recomputed for ${LABEL[m]}.`;
+ updateSelection();
+}
+function renderUnifiedDecision(){
+ const u=D.unified_engine;if(!u)return;
+ $('unifiedDecision').style.display='block';
+ const r=u.screenings.find(x=>String(x.building_id)===selected);
+ if(!r){$('engFlag').textContent='NO SCREENING DATA';return;}
+ $('engRoof').textContent=r.roof_solar_heat_avoided_kWh_simulated_day.toFixed(1)+' kWh/day';
+ $('engWalls').textContent=r.nearby_wall_reflection_change_kWh_all_roofs_reflective===null?'No neighbors':signed(r.nearby_wall_reflection_change_kWh_all_roofs_reflective,2)+' kWh/day';
+ $('engSpread').textContent=r.roof_model_spread_kWh_simulated_day.toFixed(1)+' kWh/day';
+ $('engFlag').textContent=r.review_status;
+ $('engFlag').style.color=r.review_status==='PRIORITIZE FOR FURTHER STUDY'?'#5be3dc':'#ffbb77';
+ $('engContext').textContent=`Building ${selected}: ${r.neighbor_wall_count} neighboring wall patches within ${r.nearby_wall_radius_m.toFixed(0)} m.`;
+ const tbody=$('engHotspotRows');if(!tbody.childElementCount){
+  u.top_hotspots.slice(0,10).forEach((hot,i)=>{let tr=document.createElement('tr');tr.style.cursor='default';for(const t of [String(i+1),String(hot.face_id),String(hot.building_id),hot.predicted_reflection_Wh_per_m2_day.toFixed(1)]){const td=document.createElement('td');td.textContent=t;tr.append(td);}tr.lastChild.className='r';tbody.append(tr);});
+ }
+}
+function updateSelection(){let r=D.rankings.find(x=>String(x.building_id)===selected);if(!r)return;
+ const rank=rankingRows.findIndex(x=>x.id===selected)+1;const m=effectiveMethod(), reduction=rankingMetric(r,m),b=D.building_series[selected],scen=$('scenario').value,h=+$('hour').value;
+ $('selection').replaceChildren();
+ const title=document.createElement('div');const strong=document.createElement('strong');strong.style.color='#fff';strong.textContent=`Building ${selected} · rank ${rank} / ${rankingRows.length}`;title.append(strong);$('selection').append(title);
+ for(let t of [`${LABEL[m]} mean daylight roof solar reduction: ${reduction.toFixed(2)} W/m²`,`AI roof solar reduction: ${r.ai_estimated_roof_solar_reduction_Wm2.toFixed(2)} W/m²`,`Full physics roof solar reduction: ${r.physics_roof_solar_reduction_Wm2.toFixed(2)} W/m²`,`Physics-only modeled roof temperature difference: ${r.physics_simulated_roof_temperature_delta_C.toFixed(2)} °C`,`AI modeled solar heat avoided: ${r.ai_solar_heat_avoided_kWh_simulated_day.toFixed(1)} kWh of heat / modeled day (NOT electricity)`,`Full-physics modeled solar heat avoided: ${r.physics_solar_heat_avoided_kWh_simulated_day.toFixed(1)} kWh of heat / modeled day`,`Archived roof area: ${r.roof_area_m2.toFixed(1)} m²`]){const el=document.createElement('div');el.textContent=t;$('selection').append(el);}
+ renderUnifiedDecision();
+}
+function selectBuilding(id){if(!D.building_series[String(id)])return;selected=String(id);refreshRanking();drawTrends();if($('mapView').value==='2d'&&map2d.render)map2d.render();else scheduleMap();}
+function updateControls(){let st=getState();updateHelp(st);updateMetrics(st);updateSelection();scheduleMap();}
+function interpolateColor(value,palette,limits){let q=(value-limits[0])/(limits[1]-limits[0]);q=Math.max(0,Math.min(1,q));let k=palette.findIndex(p=>p[0]>=q);if(k<=0)return palette[0][1];let a=palette[k-1],b=palette[k],f=(q-a[0])/(b[0]-a[0]);const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));let x=rgb(a[1]),y=rgb(b[1]);return `rgb(${x.map((v,i)=>Math.round(v+(y[i]-v)*f)).join(',')})`;}
+function stopMap(){let elem=$('city');try{if(elem.data&&typeof Plotly.purge==='function')Plotly.purge(elem);}catch(e){}elem.replaceChildren();elem.__urbanClick=false;map2d.render=null;}
+function show2d(st){
+ const root=$('city');if(!root.querySelector('canvas')){stopMap();let canvas=document.createElement('canvas');canvas.className='urban-canvas';canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Top-down roof triangles colored by selected radiation metric; use ranking table for accessible building selection');root.append(canvas);}
+ const canvas=root.querySelector('canvas'),g=D.mesh,roof=g.roof_i,pts=D.centroids;
+ const gx=g.x,gy=g.y,minx=Math.min(...gx),maxx=Math.max(...gx),miny=Math.min(...gy),maxy=Math.max(...gy);
+ function render(){const rect=root.getBoundingClientRect(),w=Math.max(300,Math.round(rect.width)),h=Math.max(230,Math.round(rect.height)),scale=Math.min((w-70)/(maxx-minx),(h-65)/(maxy-miny));const padX=(w-scale*(maxx-minx))/2,padY=(h-scale*(maxy-miny))/2;
+ const pixelRatio=Math.min(2,window.devicePixelRatio||1);canvas.width=w*pixelRatio;canvas.height=h*pixelRatio;const c=canvas.getContext('2d');c.setTransform(pixelRatio,0,0,pixelRatio,0,0);c.clearRect(0,0,w,h);c.fillStyle='#0a1626';c.fillRect(0,0,w,h);
+ const xy=(x,y)=>[padX+(x-minx)*scale,h-(padY+(y-miny)*scale)];
+ c.strokeStyle='#1a3047';c.lineWidth=.6;for(let i=0;i<7;i++){let x=20+(w-40)*i/6,y=18+(h-36)*i/6;c.beginPath();c.moveTo(x,0);c.lineTo(x,h);c.stroke();c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke();}
+ for(const idx of roof){let a=g.i[idx],b=g.j[idx],d=g.k[idx],p=xy(g.x[a],g.y[a]),q=xy(g.x[b],g.y[b]),r=xy(g.x[d],g.y[d]);c.beginPath();c.moveTo(...p);c.lineTo(...q);c.lineTo(...r);c.closePath();c.fillStyle=interpolateColor(st.arr[idx],st.pal,st.lim);c.fill();c.strokeStyle='#20344baa';c.lineWidth=.55;c.stroke();}
+ const dots=[];for(const v of pts){let [x,y]=xy(v.x,v.y),sel=String(v.id)===selected;c.beginPath();c.arc(x,y,sel?5:2.5,0,Math.PI*2);c.fillStyle=sel?'#ffd493':'#edf7ff';c.fill();if(sel){c.strokeStyle='#0e1c32';c.lineWidth=1.5;c.stroke();c.fillStyle='#f6e1bc';c.font='bold 12px system-ui';c.fillText(v.id,x+9,y-5);}dots.push({id:String(v.id),x,y});}
+ map2d.transform={xy,scale,dots,roof,rect:root.getBoundingClientRect(),st};
+ }
+ map2d.render=render;render();
+ canvas.onmousemove=ev=>{let a=map2d.transform;if(!a)return;const bounds=canvas.getBoundingClientRect(),x=ev.clientX-bounds.left,y=ev.clientY-bounds.top;
+ let dot=a.dots.map(d=>({...d,dist:(d.x-x)**2+(d.y-y)**2})).sort((u,v)=>u.dist-v.dist)[0];const tip=$('mapTooltip');let content='';
+ if(dot&&dot.dist<12**2)content=`Building ${dot.id} · click to select`;
+ else{for(const idx of a.roof){const g=D.mesh;let ps=[g.i[idx],g.j[idx],g.k[idx]].map(k=>a.xy(g.x[k],g.y[k]));const [A,B,C]=ps;const cross=(P,Q,X,Y)=>(Q[0]-P[0])*(Y-P[1])-(Q[1]-P[1])*(X-P[0]);const d1=cross(A,B,x,y),d2=cross(B,C,x,y),d3=cross(C,A,x,y);if((d1>=0&&d2>=0&&d3>=0)||(d1<=0&&d2<=0&&d3<=0)){content=`Roof face #${idx}: ${a.st.arr[idx].toFixed(2)} W/m²`;break;}}}
+ if(!content){tip.style.display='none';canvas.style.cursor='crosshair';return;}tip.textContent=content;tip.style.display='block';tip.style.left=Math.min(bounds.width-220,x+14)+'px';tip.style.top=Math.min(bounds.height-42,y+13)+'px';canvas.style.cursor=dot&&dot.dist<144?'pointer':'crosshair';
+ };
+ canvas.onmouseleave=()=>{$('mapTooltip').style.display='none'};
+ canvas.onclick=ev=>{let a=map2d.transform;const rect=canvas.getBoundingClientRect(),x=ev.clientX-rect.left,y=ev.clientY-rect.top;let dot=a?.dots.map(d=>({...d,dist:(d.x-x)**2+(d.y-y)**2})).sort((u,v)=>u.dist-v.dist)[0];if(dot&&dot.dist<18**2)selectBuilding(dot.id);};
+ $('modePill').textContent='2D · ROOFS';
+}
+function draw3d(st,ver){const g=D.mesh,pts=D.centroids,root=$('city');
+ if(root.querySelector('canvas.urban-canvas'))stopMap();
+ const faces={type:'mesh3d',x:g.x,y:g.y,z:g.z,i:g.i,j:g.j,k:g.k,intensity:st.arr,intensitymode:'cell',flatshading:true,colorscale:st.pal,cmin:st.lim[0],cmax:st.lim[1],opacity:1,hoverinfo:'skip',name:st.label,showscale:false};
+ const dots={type:'scatter3d',mode:'markers',x:pts.map(p=>p.x),y:pts.map(p=>p.y),z:pts.map(p=>p.z),text:pts.map(p=>p.id),marker:{size:pts.map(p=>String(p.id)===selected?6:3),color:pts.map(p=>String(p.id)===selected?'#ffd493':'#f3faff'),opacity:.9,line:{width:.5,color:'#102b3c'}},hovertemplate:'Building %{text}<extra>Click to select</extra>',name:'Buildings'};
+ const height=Math.max(340,root.getBoundingClientRect().height);
+ let layout={...plotStyle,height,showlegend:false,uirevision:'urbanray-camera',scene:{aspectmode:'data',uirevision:'urbanray-camera',xaxis:{title:'Easting (m)',showbackground:false},yaxis:{title:'Northing (m)',showbackground:false},zaxis:{title:'Height (m)',showbackground:false},camera:{eye:{x:1.45,y:-1.8,z:1.18}}}};
+ // View version prevents a stale asynchronous render from taking control of a newer map view.
+ return Plotly.react(root,[faces,dots],layout,{responsive:true,displaylogo:false}).then(()=>{if(ver!==mapVersion)return;if(!root.__urbanClick){root.on('plotly_click',e=>{let pt=e.points?.[0];if(pt?.curveNumber===1&&pt.text)selectBuilding(String(pt.text));});root.__urbanClick=true;}$('modePill').textContent='3D · ALL FACES';});
+}
+function drawMap(){mapUpdating=true;pendingMap=false;let ver=++mapVersion,st=getState();updateHelp(st);updateMetrics(st);
+ if($('mapView').value==='2d'||!webglSupported){show2d(st);mapUpdating=false;if(pendingMap)scheduleMap();return;}
+ draw3d(st,ver).catch(err=>{console.error('WebGL map failed; switching to 2D:',err);$('mapView').value='2d';webglSupported=false;$('mapView').querySelector('option[value="3d"]').disabled=true;show2d(getState());$('viewNote').textContent='3D unavailable in this browser. Using the accurate 2D rooftop view.';}).finally(()=>{mapUpdating=false;if(pendingMap)scheduleMap();});
+}
+function scheduleMap(){if(mapUpdating){pendingMap=true;return;}if(mapRaf)return;mapRaf=window.requestAnimationFrame(()=>{mapRaf=0;drawMap();});}
+const lineColors={ai:'#5be3dc',physics:'#ffffff',no_reflection:'#ffbb77'};
+function drawTrends(){const b=D.building_series[selected];if(!b)return;let h=+$('hour').value,scen=$('scenario').value,arr=b[scen],times=D.times.map(t=>t.slice(11,16)),m=$('method').value;
+ $('trendTitle').textContent=`Building ${selected} · ${SCEN[scen]} rooftop radiation`;
+ $('trendStats').textContent=`At ${times[h]} UTC: AI ${arr.ai[h].toFixed(2)}; full physics ${arr.physics[h].toFixed(2)}; no-reflection ${arr.no_reflection[h].toFixed(2)} W/m². AI − physics ${signed(arr.ai[h]-arr.physics[h],2)} W/m².`;
+ let order=['no_reflection','physics','ai'];let traces=order.map(id=>({type:'scatter',mode:'lines',x:times,y:arr[id],name:LABEL[id],line:{color:lineColors[id],width:id===m?3.4:2,dash:id==='physics'?'dot':'solid'},hovertemplate:`%{x} UTC · %{y:.2f} W/m²<extra>${LABEL[id]}</extra>`}));
+ let loc=times[h];let layout={...plotStyle,height:265,margin:{l:53,r:18,t:12,b:50},hovermode:'x unified',xaxis:{title:'Hour UTC',type:'category',showgrid:false},yaxis:{title:'W/m²',gridcolor:'#1b344f'},legend:{orientation:'h',x:0,y:-.27,font:{size:10}},shapes:[{type:'line',x0:loc,x1:loc,y0:0,y1:1,yref:'paper',line:{color:'#6b93a6',dash:'dot',width:1}}]};
+ Plotly.react('trend',traces,layout,{responsive:true,displaylogo:false}).catch(showChartError);
+ const diff=(id)=>arr[id].map((v,i)=>v-arr.physics[i]);
+ const errors=[{type:'scatter',mode:'lines',x:times,y:diff('ai'),name:'AI − physics',line:{color:lineColors.ai,width:2.6},hovertemplate:'%{x} UTC · %{y:+.2f} W/m²<extra>AI error</extra>'},{type:'scatter',mode:'lines',x:times,y:diff('no_reflection'),name:'No-reflection − physics',line:{color:lineColors.no_reflection,width:2},hovertemplate:'%{x} UTC · %{y:+.2f} W/m²<extra>Baseline difference</extra>'}];
+ Plotly.react('residual',errors,{...plotStyle,height:165,margin:{l:55,r:18,t:9,b:31},hovermode:'x unified',xaxis:{type:'category',showgrid:false},yaxis:{title:'Δ W/m²',gridcolor:'#1b344f',zeroline:true,zerolinecolor:'#93a9b9'},legend:{orientation:'h',x:0,y:-.38,font:{size:10}}},{responsive:true,displaylogo:false}).catch(showChartError);
+}
+function drawImportance(){const v=IMPORTANCE.filter(x=>x.mean_extra_MAE_Wm2_if_permuted>0).slice(0,9).reverse();
+ Plotly.react('importance',[{type:'bar',orientation:'h',y:v.map(e=>e.feature),x:v.map(e=>e.mean_extra_MAE_Wm2_if_permuted),marker:{color:'#5be3dc'},hovertemplate:'%{y}: +%{x:.2f} W/m² MAE<extra></extra>'}],{...plotStyle,height:265,margin:{l:156,r:18,t:13,b:37},xaxis:{title:'Extra MAE if permuted',gridcolor:'#1b344f'},yaxis:{automargin:true}},{responsive:true,displaylogo:false}).catch(showChartError);
+}
+function showChartError(err){console.error(err);$('errorBanner').textContent='A chart could not be rendered: '+String(err.message||err);$('errorBanner').style.display='block';}
+function drawPracticalEvidence(){
+ const rows=EVIDENCE.wall_hotspots,ks=[10,20,50];
+ const get=(m,k)=>rows.find(r=>r.method===m&&r.top_k_wall_patches===k);
+ const topHotspot=get('dedicated_hotspot_ai',20)||get('ai_residual',20);
+ $('hotAI').textContent=topHotspot.percent_of_reference_topk_exposure.toFixed(1)+'%';
+ $('hotAILabel').textContent=get('dedicated_hotspot_ai',20)?'HOTSPOT SPECIALIST · TOP 20':'AI · TOP 20 WALL PATCHES';
+ $('hotBase').textContent=get('direct_exposure_rule',20).percent_of_reference_topk_exposure.toFixed(1)+'%';
+ const series=[['ai_residual','Geometry-aware AI','#5be3dc'],['direct_exposure_rule','Direct-exposure rule','#ffbb77']];
+ if(get('dedicated_hotspot_ai',20))series.unshift(['dedicated_hotspot_ai','Dedicated hotspot model','#c4a0ff']);
+ if(get('previous_residual_ai',20))series.push(['previous_residual_ai','Previous AI','#879ebb']);
+ const traces=series.map(([method,label,color])=>({type:'bar',name:label,x:ks.map(String),y:ks.map(k=>get(method,k).percent_of_reference_topk_exposure),marker:{color},hovertemplate:'Top %{x} wall patches · %{y:.1f}% of physics oracle<extra>'+label+'</extra>'}));
+ Plotly.react('hotspotChart',traces,{...plotStyle,height:265,margin:{l:53,r:14,t:15,b:67},barmode:'group',xaxis:{title:'Top K wall patches'},yaxis:{title:'Reference exposure captured (%)',range:[0,100],gridcolor:'#1b344f'},legend:{orientation:'h',x:0,y:-.35,font:{size:10}}},{responsive:true,displaylogo:false}).catch(showChartError);
+ const obs=EVIDENCE.observed, scenes=obs.scenes.filter(s=>s.split==='heldout');
+ $('landsatScenes').textContent=String(obs.heldout.scenes);
+ $('landsatMae').textContent=obs.heldout.raw_scene_proxy_MAE_C.toFixed(2)+' °C';
+ const xy=scenes.flatMap(s=>[s.observed_landsat_LST_C,s.physics_modeled_emission_proxy_C]);
+ const lo=Math.floor(Math.min(...xy)-2),hi=Math.ceil(Math.max(...xy)+2);
+ Plotly.react('landsatChart',[
+   {type:'scatter',mode:'lines',x:[lo,hi],y:[lo,hi],line:{color:'#8199b2',dash:'dot'},name:'Equal values',hoverinfo:'skip'},
+   {type:'scatter',mode:'markers+text',x:scenes.map(s=>s.observed_landsat_LST_C),y:scenes.map(s=>s.physics_modeled_emission_proxy_C),text:scenes.map(s=>s.date_utc.slice(5)),textposition:'top center',textfont:{size:10},marker:{size:10,color:'#5be3dc'},name:'2026 scenes',hovertemplate:'Landsat: %{x:.1f} °C<br>Physics proxy: %{y:.1f} °C<extra>NOT AI validation</extra>'}
+ ],{...plotStyle,height:265,margin:{l:54,r:15,t:12,b:54},showlegend:false,xaxis:{title:'Landsat scene mean LST · °C',gridcolor:'#1b344f',range:[lo,hi]},yaxis:{title:'Physics proxy · °C',gridcolor:'#1b344f',range:[lo,hi]}},{responsive:true,displaylogo:false}).catch(showChartError);
+}
+
+function renderPairedDevelopmentEvidence(){
+ const src=VALIDATION_2025;
+ const records=Object.entries(src.dates).sort((a,b)=>a[0].localeCompare(b[0]));
+ const avg=k=>records.reduce((acc,[,r])=>acc+r[k],0)/records.length;
+ $('pairedAi').textContent=avg('decision_ai').toFixed(2)+' °C';
+ $('pairedPhysics').textContent=avg('physics').toFixed(2)+' °C';
+ $('pairedBaseline').textContent=avg('no_reflection').toFixed(2)+' °C';
+ let wins=records.filter(([,r])=>r.decision_ai<r.no_reflection).length;
+ let beatsPhysics=records.filter(([,r])=>r.decision_ai<r.physics).length;
+ const cells=records.reduce((n,[,r])=>n+r.cells,0);
+ $('pairedCaption').textContent=`${records.length} development scenes · ${cells} correlated matched grid-cell rows · AI beats no-reflection on ${wins}/${records.length} dates and physics on ${beatsPhysics}/${records.length}. No statistical significance is claimed.`;
+ const body=$('pairedDateRows');body.replaceChildren();
+ for(const [date,rec] of records){let tr=document.createElement('tr');tr.style.cursor='default';
+  for(const item of [date,rec.decision_ai.toFixed(2),rec.physics.toFixed(2),rec.no_reflection.toFixed(2)]){
+   let td=document.createElement('td');td.textContent=item;tr.appendChild(td);
+  }
+  body.appendChild(tr);
+ }
+}
+
+function renderModelComparison(){
+ const rows=EVIDENCE.model_comparison||[];if(!rows.length)return;
+ $('enhancedModels').style.display='block';const tb=$('modelComparisonRows');tb.replaceChildren();
+ for(const r of rows){const tr=document.createElement('tr');tr.style.cursor='default';
+ for(const value of [r.model,r.test_mae_Wm2.toFixed(2)+' W/m²',r.top10_percent_reflection_test_mae_Wm2.toFixed(2)+' W/m²',r.wall_hotspot_top20.captured_percent.toFixed(1)+'%']){const td=document.createElement('td');td.textContent=value;tr.appendChild(td);}tb.appendChild(tr);}
+}
+function init(){try{validateArchive();LIMITS=limits();webglSupported=hasWebGL();$('mapView').value='2d';if(!webglSupported){$('mapView').value='2d';$('mapView').querySelector('option[value="3d"]').disabled=true;}
+ $('mae').textContent=META.heldout_ai_MAE_Wm2.toFixed(2);$('improvement').textContent=META.heldout_percent_improvement_vs_no_reflection.toFixed(1)+'%';$('buildings').textContent=D.rankings.length;$('spearman').textContent=META.ai_vs_physics_building_solar_saving_rank_spearman.toFixed(3);$('rooferror').textContent=`Held-out roof P90 absolute error: ${META.heldout_roof_absolute_error_p90_Wm2.toFixed(2)} W/m² (not a confidence interval).`;
+ $('hour').max=D.times.length-1;$('hour').value=D.default_time_index;
+ $('method').addEventListener('change',()=>{refreshRanking();drawTrends();updateControls();});
+ $('quantity').addEventListener('change',()=>{let q=$('quantity').value;if(['reflection','ai_reflection','specialist_reflection'].includes(q)){if(!$('method').disabled)savedMethod=$('method').value;$('method').value=q==='reflection'?'physics':'ai';}else if($('method').disabled){$('method').value=savedMethod;}refreshRanking();drawTrends();updateControls();});
+ $('scenario').addEventListener('change',()=>{drawTrends();updateControls();});
+ $('hour').addEventListener('input',()=>{drawTrends();updateControls();});
+ $('mapView').addEventListener('change',()=>{if(!mapUpdating)stopMap();updateControls();});
+ $('searchBuilding').addEventListener('input',refreshRanking);
+ $('rankMetric').addEventListener('change',refreshRanking);
+ $('guidedDemoBtn').addEventListener('click',()=>{
+  $('quantity').value='specialist_reflection';$('quantity').dispatchEvent(new Event('change'));
+  $('scenario').value='dark_roof';$('scenario').dispatchEvent(new Event('change'));
+  $('mapView').value='2d';$('mapView').dispatchEvent(new Event('change'));
+  $('hour').value='17';$('hour').dispatchEvent(new Event('input'));
+  selectBuilding(String(D.rankings[0].building_id));
+  $('guidedDemoStatus').textContent=' Demo ready: selected building, modeled reflections, 17:00 UTC.';
+  $('city').scrollIntoView({behavior:'smooth',block:'center'});
+ });
+ window.addEventListener('resize',()=>{if($('mapView').value==='2d'&&map2d.render)map2d.render();});
+ refreshRanking();drawTrends();drawImportance();drawPracticalEvidence();renderPairedDevelopmentEvidence();renderModelComparison();updateControls();
+ window.UrbanRayDebug={getState,daylightMeanReduction,limits:LIMITS,rankingMetric,validateArchive};
+ }catch(err){console.error(err);$('errorBanner').textContent='Dashboard data or initialization error: '+String(err.message||err);$('errorBanner').style.display='block';}}
+init();
+</script></body></html>
